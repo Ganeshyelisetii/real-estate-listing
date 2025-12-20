@@ -14,13 +14,15 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+
 app.use(cors({
   origin: [
-    'http://localhost:5173',              // local
-    'https://vercel.com/ganeshyelisettis-projects/real-estae/9Dx9T9EWFJ24VwZwBjN8C6g5HrSh'    // 🔴 replace
+    'http://localhost:5173',                        // for local dev
+    'https://real-estate-listing-xi.vercel.app'    // your deployed frontend
   ],
   credentials: true,
 }));
+
 
 /* 🔹 ROUTES (AS YOU WANT) */
 app.use('/api/auth', userRouter);
