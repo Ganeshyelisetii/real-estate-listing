@@ -37,43 +37,38 @@ export default function Profile() {
   }, [file]);
 
   const handleAppwriteUpload = async (file) => {
-  if (!file) return; // Make sure a file is selected
+    try {
+      setFilePerc(0);
+      setFileUploadError(false);
 
-  try {
-    setFilePerc(0);
-    setFileUploadError(false);
+      const uploadedFile = await storage.createFile(
+        '684441d20019600fa554', // Your bucket ID
+        ID.unique(),
+        file,
+        [Permission.read(Role.any())],
+        [Permission.write(Role.any())]
+      );
 
-    // Upload file to Appwrite storage
-    const uploadedFile = await storage.createFile(
-      '684441d20019600fa554',                // Bucket ID
-      ID.unique(),                            // Unique file ID
-      file,                                   // File object
-      [Permission.read(Role.any())],          // Anyone can read
-      [Permission.write(Role.user(currentUser.$id))], // Only current user can overwrite
-      (progress) => {
-        // Track upload progress
-        setFilePerc(Math.round((progress.loaded / progress.total) * 100));
-      }
-    );
+      console.log('uploadedFile:', uploadedFile);
 
-    // Construct file URL
-    const fileURL = `https://fra.cloud.appwrite.io/v1/storage/buckets/684441d20019600fa554/files/${uploadedFile.$id}/view?project=68444194002bfb6f87a6`;
+      const fileURL = `https://fra.cloud.appwrite.io/v1/storage/buckets/684441d20019600fa554/files/${uploadedFile.$id}/view?project=68444194002bfb6f87a6`;
+      console.log('Image URL:', fileURL);
 
-    console.log('Uploaded File URL:', fileURL);
 
-    // Update avatar in form data
-    setFormData((prev) => ({
-      ...prev,
-      avatar: fileURL,
-    }));
+      console.log('Image URL:', fileURL);
 
-    setFilePerc(100);
-  } catch (err) {
-    console.error('Upload error:', err);
-    setFileUploadError(true);
-    setFilePerc(0);
-  }
-};
+      setFormData((prev) => ({
+        ...prev,
+        avatar: fileURL,
+      }));
+
+      setFilePerc(100);
+    } catch (err) {
+      console.error('Upload error:', err);
+      setFileUploadError(true);
+      setFilePerc(0);
+    }
+  };
 
   const handleChange = (e) => {
     const { id, value } = e.target;
