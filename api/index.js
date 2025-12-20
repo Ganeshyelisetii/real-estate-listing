@@ -26,6 +26,10 @@ app.use(cors({
   credentials: true,
 }));
 
+// ❌ REMOVE THIS LINE
+// app.options("*", cors());
+
+
 // VERY IMPORTANT for preflight
 app.options("*", cors());
 
