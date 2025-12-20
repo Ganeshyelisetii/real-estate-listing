@@ -1,25 +1,19 @@
 {
-  "name": "real-estatemern-project",
+  "name": "real-estatemern-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon api/index.js",
-    "start": "node api/index.js"
+    "dev": "nodemon index.js",
+    "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "appwrite": "^18.1.1",
-    "bcryptjs": "^3.0.2",
-    "cookie-parser": "^1.4.7",
+    "express": "^4.18.2",
+    "mongoose": "^8.15.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0",
+    "cookie-parser": "^1.4.7",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.15.1",
-    "nodemon": "^3.1.10"
+    "bcryptjs": "^3.0.2",
+    "appwrite": "^18.1.1"
   }
 }
