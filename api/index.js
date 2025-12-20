@@ -15,13 +15,20 @@ app.use(express.json());
 app.use(cookieParser());
 
 
+
+
 app.use(cors({
   origin: [
-    'http://localhost:5173',                        // for local dev
-    'https://real-estate-listing-xi.vercel.app'    // your deployed frontend
+    "http://localhost:5173",
+    "https://real-estate-listing-xi.vercel.app"
   ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
 }));
+
+// VERY IMPORTANT for preflight
+app.options("*", cors());
+
 
 
 /* 🔹 ROUTES (AS YOU WANT) */

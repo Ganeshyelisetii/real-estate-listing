@@ -116,7 +116,7 @@ export default function Profile() {
  const handleDelete=async ()=>{
   try{
     dispatch(deleteUserStart());
-    const res=await fetch(`${backendUrl}/api/auth/delete/${currentUser._id}`,{method:'DELETE',
+    const res=await fetch(`${backendUrl}/api/auth/delete/${currentUser._id}`,{method:'DELETE',credentials: 'include',
 
      
   });

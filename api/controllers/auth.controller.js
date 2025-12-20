@@ -7,6 +7,11 @@ import { errorHandler } from '../utils/error.js';
 export const signup = async (req, res, next) => {
   try {
     const { username, email, password, avatar } = req.body;
+    const User = await User.findOne({ email });
+    if(User){
+        return res.status(200).json({message:'user email already exist'})
+    }
+
 
     const hashPassword = bcryptjs.hashSync(password, 10);
 

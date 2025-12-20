@@ -10,7 +10,7 @@ function OAuth() {
   const dispatch = useDispatch(); // ✅ Use at top level
   const navigate=useNavigate()
   
-
+  const backendUrl=import.meta.env.VITE_BACKEND_URL
   const handleGoogleClick = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -18,7 +18,7 @@ function OAuth() {
       const result = await signInWithPopup(auth, provider);
 
       // Send user data to backend
-      const res = await fetch('/api/user/google', {
+      const res = await fetch(`${backendUrl}/api/user/google1`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
