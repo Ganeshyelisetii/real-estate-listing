@@ -169,7 +169,7 @@ export default function Profile() {
   try {
     const res = await fetch(`${backendUrl}/api/listing/delete/${id}`, {
       method: 'DELETE',
-      credentials: 'include', // Add if using cookies (like JWT auth)
+      credentials: true, // Add if using cookies (like JWT auth)
     });
 
     const data = await res.json();

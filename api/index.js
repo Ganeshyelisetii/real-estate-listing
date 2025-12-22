@@ -11,8 +11,10 @@ dotenv.config();
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(cookieParser());
+
 
 
 
@@ -22,16 +24,10 @@ app.use(cors({
     "http://localhost:5173",
     "https://real-estate-listing-xi.vercel.app"
   ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
 }));
 
-// ❌ REMOVE THIS LINE
-// app.options("*", cors());
-
-
-// VERY IMPORTANT for preflight
-app.options("*", cors());
+app.options('*', cors());
 
 
 
