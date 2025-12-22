@@ -42,55 +42,56 @@ export const signup = async (req, res, next) => {
 // SIGNIN CONTROLLER
 // =======================
 export const signin = async (req, res, next) => {
-  const { email, password } = req.body;
-
   try {
-    const validUser = await User.findOne({ email });
-    if (!validUser) return next(errorHandler(404, 'User not found!'));
+    const { email, password: inputPassword } = req.body;
 
-    const isPasswordCorrect = bcryptjs.compareSync(
-      password,
-      validUser.password
+    const user = await User.findOne({ email });
+    if (!user) return next(errorHandler(404, 'User not found'));
+
+    const isMatch = bcryptjs.compareSync(
+      inputPassword,
+      user.password
     );
-    if (!isPasswordCorrect)
-      return next(errorHandler(401, 'Invalid password!'));
+    if (!isMatch) return next(errorHandler(401, 'Invalid password'));
 
     const token = jwt.sign(
-      { id: validUser._id },
+      { id: user._id },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    const { password, ...rest } = validUser._doc;
+    const { password: hashedPassword, ...rest } = user._doc;
 
     res
       .cookie('access_token', token, {
         httpOnly: true,
-        secure: true,       // ✅ REQUIRED (Render + Vercel)
-        sameSite: 'none',   // ✅ REQUIRED (cross-domain)
+        secure: true,
+        sameSite: 'none',
       })
       .status(200)
       .json(rest);
+
   } catch (error) {
     next(error);
   }
 };
+
 
 // =======================
 // GOOGLE SIGNIN / SIGNUP
 // =======================
 export const google = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const existingUser = await User.findOne({ email: req.body.email });
 
-    if (user) {
+    if (existingUser) {
       const token = jwt.sign(
-        { id: user._id },
+        { id: existingUser._id },
         process.env.JWT_SECRET,
         { expiresIn: '7d' }
       );
 
-      const { password, ...rest } = user._doc;
+      const { password: hashedPassword, ...rest } = existingUser._doc;
 
       return res
         .cookie('access_token', token, {
@@ -106,14 +107,14 @@ export const google = async (req, res, next) => {
       Math.random().toString(36).slice(-8) +
       Math.random().toString(36).slice(-8);
 
-    const hashPassword = bcryptjs.hashSync(generatedPassword, 10);
+    const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
 
     const newUser = new User({
       username:
-        req.body.name.split(' ').join('').toLowerCase() +
+        req.body.name.replace(/\s+/g, '').toLowerCase() +
         Math.random().toString(36).slice(-4),
       email: req.body.email,
-      password: hashPassword,
+      password: hashedPassword,
       avatar: req.body.photo,
     });
 
@@ -125,7 +126,7 @@ export const google = async (req, res, next) => {
       { expiresIn: '7d' }
     );
 
-    const { password, ...rest } = newUser._doc;
+    const { password: pw, ...rest } = newUser._doc;
 
     res
       .cookie('access_token', token, {
@@ -135,6 +136,7 @@ export const google = async (req, res, next) => {
       })
       .status(200)
       .json(rest);
+
   } catch (error) {
     next(error);
   }
