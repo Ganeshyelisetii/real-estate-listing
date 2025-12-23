@@ -18,7 +18,7 @@ function OAuth() {
       const result = await signInWithPopup(auth, provider);
 
       // Send user data to backend
-      const res = await fetch(`${backendUrl}/api/auth/google1`, {
+      const res = await fetch(`${backendUrl}/api/auth/google`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

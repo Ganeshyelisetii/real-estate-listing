@@ -26,7 +26,7 @@ function SignIn() {
       const res = await fetch(`${backendUrl}/api/auth/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        withcredentials: 'include', // ✅ This allows cookies (JWT) to be sent
+        credentials: 'include', // ✅ This allows cookies (JWT) to be sent
         body: JSON.stringify(formData),
       });
 
