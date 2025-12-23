@@ -13,7 +13,7 @@ export default function Contact({ listing }) {
       try {
         const backendUrl = import.meta.env.VITE_BACKEND_URL; // Replace with your Render URL
 
-        const res = await fetch(`${backendUrl}/api/auth/${listing.userRef}`);
+        const res = await fetch(`${backendUrl}/api/user/${listing.userRef}`);
 
         const data = await res.json();
         setLandlord(data);

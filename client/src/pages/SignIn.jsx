@@ -23,7 +23,7 @@ function SignIn() {
      dispatch(signInStart());
 
     try {
-      const res = await fetch(`${backendUrl}/api/user/signin`, {
+      const res = await fetch(`${backendUrl}/api/auth/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         withcredentials: 'include', // ✅ This allows cookies (JWT) to be sent
