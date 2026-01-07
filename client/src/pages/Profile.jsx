@@ -66,7 +66,7 @@ export default function Profile() {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
-
+  
   // Update Profile
   const handleSubmit = async (e) => {
     e.preventDefault();

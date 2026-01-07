@@ -5,9 +5,9 @@ import { errorHandler } from '../utils/error.js';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-// =======================
-// SIGNUP CONTROLLER
-// =======================
+/* ======================================================
+   SIGNUP
+====================================================== */
 export const signup = async (req, res, next) => {
   try {
     const { username, email, password, avatar } = req.body;
@@ -20,12 +20,12 @@ export const signup = async (req, res, next) => {
       });
     }
 
-    const hashPassword = bcryptjs.hashSync(password, 10);
+    const hashedPassword = bcryptjs.hashSync(password, 10);
 
     const newUser = new User({
       username,
       email,
-      password: hashPassword,
+      password: hashedPassword,
       avatar,
     });
 
@@ -40,9 +40,9 @@ export const signup = async (req, res, next) => {
   }
 };
 
-// =======================
-// SIGNIN CONTROLLER
-// =======================
+/* ======================================================
+   SIGNIN
+====================================================== */
 export const signin = async (req, res, next) => {
   try {
     const { email, password: inputPassword } = req.body;
@@ -53,48 +53,66 @@ export const signin = async (req, res, next) => {
     const isMatch = bcryptjs.compareSync(inputPassword, user.password);
     if (!isMatch) return next(errorHandler(401, 'Invalid password'));
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    const { password: hashedPassword, ...rest } = user._doc;
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    const { password, ...rest } = user._doc;
 
     res
       .cookie('access_token', token, {
         httpOnly: true,
-        secure: false,
-        sameSite:  'lax',
+        secure: isProduction,                 // 🔑 key fix
+        sameSite: isProduction ? 'none' : 'lax',
       })
       .status(200)
       .json(rest);
+
   } catch (error) {
     next(error);
   }
 };
 
-// =======================
-// GOOGLE SIGNIN / SIGNUP
-// =======================
+/* ======================================================
+   GOOGLE SIGNIN / SIGNUP
+====================================================== */
 export const google = async (req, res, next) => {
   try {
     const existingUser = await User.findOne({ email: req.body.email });
 
+    // ---- LOGIN ----
     if (existingUser) {
-      const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-      const { password: hashedPassword, ...rest } = existingUser._doc;
+      const token = jwt.sign(
+        { id: existingUser._id },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+
+      const { password, ...rest } = existingUser._doc;
 
       return res
         .cookie('access_token', token, {
           httpOnly: true,
-          secure: false,
-          sameSite:  'lax',
+          secure: isProduction,
+          sameSite: isProduction ? 'none' : 'lax',
         })
         .status(200)
         .json(rest);
     }
 
-    const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+    // ---- SIGNUP ----
+    const generatedPassword =
+      Math.random().toString(36).slice(-8) +
+      Math.random().toString(36).slice(-8);
+
     const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
 
     const newUser = new User({
-      username: req.body.name.replace(/\s+/g, '').toLowerCase() + Math.random().toString(36).slice(-4),
+      username:
+        req.body.name.replace(/\s+/g, '').toLowerCase() +
+        Math.random().toString(36).slice(-4),
       email: req.body.email,
       password: hashedPassword,
       avatar: req.body.photo,
@@ -102,32 +120,43 @@ export const google = async (req, res, next) => {
 
     await newUser.save();
 
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    const { password: pw, ...rest } = newUser._doc;
+    const token = jwt.sign(
+      { id: newUser._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    const { password, ...rest } = newUser._doc;
 
     res
       .cookie('access_token', token, {
         httpOnly: true,
-        secure: false,
-        sameSite:  'lax',
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
       })
       .status(200)
       .json(rest);
+
   } catch (error) {
     next(error);
   }
 };
 
-// =======================
-// SIGN OUT
-// =======================
+/* ======================================================
+   SIGN OUT
+====================================================== */
 export const signOut = async (req, res, next) => {
   try {
     res.clearCookie('access_token', {
+      httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
     });
-    res.status(200).json('User has been logged out');
+
+    res.status(200).json({
+      success: true,
+      message: 'User has been logged out',
+    });
   } catch (error) {
     next(error);
   }

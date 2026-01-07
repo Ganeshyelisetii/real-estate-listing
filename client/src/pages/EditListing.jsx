@@ -162,7 +162,7 @@ export default function CreateListing() {
     const id = params.id;
 
     const res = await fetch(`${backendUrl}/api/listing/update/${id}`, {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
